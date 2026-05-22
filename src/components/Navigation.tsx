@@ -1,6 +1,5 @@
 import { LayoutDashboard, Wallet, Users, FileText, Settings, Rocket, Bell, Search, HelpCircle, ChevronDown, Wand2 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import { motion } from 'motion/react';
 import { clsx } from 'clsx';
 
 export function Sidebar() {
@@ -19,7 +18,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r border-slate-200 h-screen fixed left-0 top-0 flex flex-col z-20">
       <div className="p-6 mb-4">
-        <img src="/Logo_SIRA_Dark.png" alt="SIRA" className="h-24 w-auto object-contain" />
+        <img src="/Logo_SIRA_Light.png" alt="SIRA" className="h-24 w-auto object-contain" />
       </div>
 
       <nav className="flex-1 px-4 flex flex-col gap-1 overflow-y-auto">
