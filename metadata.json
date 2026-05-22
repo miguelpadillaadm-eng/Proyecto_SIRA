@@ -1,0 +1,8 @@
+{
+  "name": "SIRA",
+  "description": "Sistema Inteligente de Recuperación Activa - AI-powered student retention and financial recovery platform featuring AURA, your intelligent assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
