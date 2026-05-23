@@ -1,7 +1,7 @@
-import { motion } from 'motion/react';
-import { TrendingUp, TrendingDown, ChevronRight, Landmark, AlertCircle, CircleCheckBig, BarChart3, Wallet, Clock, CalendarDays, AlertTriangle, Info, PieChart as PieIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronRight, Landmark, AlertCircle, CircleCheckBig, BarChart3, Wallet, Clock, CalendarDays, AlertTriangle, Info, Users, ShieldCheck, PieChart as PieIcon } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell,
 } from 'recharts';
 
 const areaData = [
@@ -17,6 +17,39 @@ const distributionData = [
   { name: 'Vencida 1-30 días', amount: '580.300.000', pct: 13.9, bar: '#f59e0b', iconBg: 'bg-amber-50',   iconColor: 'text-amber-500',   badgeBg: 'bg-amber-50',   badgeText: 'text-amber-600',   Icon: Clock        },
   { name: 'Vencida 31-90 días',amount: '165.300.000', pct: 19.1, bar: '#f87171', iconBg: 'bg-red-50',     iconColor: 'text-red-400',     badgeBg: 'bg-red-50',     badgeText: 'text-red-400',     Icon: CalendarDays },
   { name: 'Vencida > 90 días', amount: '674.300.000', pct: 16.3, bar: '#ef4444', iconBg: 'bg-red-50',     iconColor: 'text-red-500',     badgeBg: 'bg-red-50',     badgeText: 'text-red-500',     Icon: AlertTriangle},
+];
+
+const riskChartData = [
+  { name: 'Alto',  value: 342, color: '#a78bfa' },
+  { name: 'Medio', value: 538, color: '#818cf8' },
+  { name: 'Bajo',  value: 367, color: '#34d399' },
+];
+
+const riskLevels = [
+  {
+    label: 'Alto riesgo',  desc: 'Estudiantes en riesgo crítico de deserción',
+    count: '342', pct: '27%', trend: '+12%', trendColor: 'text-red-500',
+    Icon: AlertTriangle, iconBg: 'bg-violet-50', iconColor: 'text-violet-500',
+    TrendIcon: TrendingUp,
+  },
+  {
+    label: 'Riesgo medio', desc: 'Estudiantes con factores de riesgo moderado',
+    count: '538', pct: '43%', trend: '-5%',  trendColor: 'text-blue-500',
+    Icon: Users,         iconBg: 'bg-blue-50',    iconColor: 'text-blue-500',
+    TrendIcon: TrendingDown,
+  },
+  {
+    label: 'Riesgo bajo',  desc: 'Estudiantes estables sin señales de riesgo',
+    count: '367', pct: '30%', trend: '-3%',  trendColor: 'text-emerald-500',
+    Icon: ShieldCheck,   iconBg: 'bg-emerald-50', iconColor: 'text-emerald-500',
+    TrendIcon: TrendingDown,
+  },
+];
+
+const riskBottomStats = [
+  { label: 'Total monitoreados',             value: '1.247', sub: '100% del universo activo',      Icon: Users,       iconBg: 'bg-blue-50',   iconColor: 'text-blue-500',   valueColor: 'text-slate-900' },
+  { label: 'Variación total vs mes anterior', value: '+8.4%', sub: 'Aumento en el riesgo general', Icon: TrendingUp,  iconBg: 'bg-red-50',    iconColor: 'text-red-500',    valueColor: 'text-red-500'   },
+  { label: 'Tendencia del riesgo alto',       value: '+12%',  sub: 'Últimos 30 días',              Icon: BarChart3,   iconBg: 'bg-orange-50', iconColor: 'text-orange-500', valueColor: 'text-orange-500'},
 ];
 
 export function Dashboard() {
@@ -145,96 +178,89 @@ export function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Risk Info card */}
-        <div className="glass-card rounded-3xl p-8 flex flex-col gap-6">
-          <h3 className="text-sm font-bold">Riesgo de deserción (IA)</h3>
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 relative">
-              <svg className="w-full h-full -rotate-90">
-                <circle cx="40" cy="40" r="35" stroke="#f1f5f9" strokeWidth="8" fill="none" />
-                <circle cx="40" cy="40" r="35" stroke="#ef4444" strokeWidth="8" fill="none" strokeDasharray="220" strokeDashoffset="160" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-sm font-bold leading-none">1.247</span>
-                <span className="text-[8px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Estudiantes</span>
+        {/* Riesgo de Deserción — nuevo diseño */}
+        <div className="lg:col-span-2 glass-card rounded-3xl p-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-800">Riesgo de deserción (IA)</h3>
+              <Info size={15} className="text-slate-400" />
+            </div>
+            <button className="flex items-center gap-2 text-xs font-semibold text-slate-600 border border-slate-200 rounded-xl px-3 py-1.5 hover:border-slate-300 transition-colors">
+              <CalendarDays size={13} /> Este mes <ChevronDownIcon size={13} />
+            </button>
+          </div>
+
+          {/* Cuerpo */}
+          <div className="flex gap-8 items-center">
+            {/* Donut */}
+            <div className="relative w-56 h-56 shrink-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={riskChartData} cx="50%" cy="50%" innerRadius={58} outerRadius={88}
+                    dataKey="value" startAngle={90} endAngle={-270} paddingAngle={3} strokeWidth={0}>
+                    {riskChartData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                <Users size={18} className="text-slate-400 mb-1" />
+                <span className="text-2xl font-bold text-slate-900 leading-none">1.247</span>
+                <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mt-0.5 leading-tight">Estudiantes<br/>monitoreados</span>
               </div>
             </div>
-            <div className="flex-1 space-y-2">
-              {[
-                { label: 'Alto', val: 342, pct: '27%', color: '#ef4444' },
-                { label: 'Medio', val: 538, pct: '43%', color: '#fbbf24' },
-                { label: 'Bajo', val: 367, pct: '30%', color: '#22c55e' },
-              ].map((i) => (
-                <div key={i.label} className="flex items-center justify-between text-[10px] font-bold">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: i.color }} />
-                    <span className="text-slate-500 uppercase tracking-widest">{i.label}</span>
+
+            {/* Niveles + programa */}
+            <div className="flex-1 flex flex-col gap-4">
+              {riskLevels.map((r) => (
+                <div key={r.label} className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${r.iconBg}`}>
+                    <r.Icon size={16} className={r.iconColor} />
                   </div>
-                  <span className="text-slate-900">{i.val} ({i.pct})</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-slate-800">{r.label}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{r.desc}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-bold text-slate-900">{r.count} <span className="text-slate-400 font-semibold text-xs">({r.pct})</span></p>
+                    <div className={`flex items-center justify-end gap-0.5 text-[10px] font-bold ${r.trendColor}`}>
+                      <r.TrendIcon size={10} /> {r.trend}
+                      <span className="text-slate-400 font-normal ml-0.5">vs mes anterior</span>
+                    </div>
+                  </div>
                 </div>
               ))}
+
             </div>
           </div>
-          <button className="mt-auto flex items-center gap-2 text-[#006875] text-[11px] font-bold hover:translate-x-1 transition-transform group">
-            Ver análisis completo <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
 
-        {/* Top Programs */}
-        <div className="lg:col-span-1 glass-card rounded-3xl p-8">
-           <h3 className="text-sm font-bold mb-6">Top 5 programas con mayor riesgo</h3>
-           <div className="space-y-5">
-              {[
-                { name: 'Administración de Empresas', students: 78, pct: 100 },
-                { name: 'Ingeniería Industrial', students: 64, pct: 85 },
-                { name: 'Contaduría Pública', students: 54, pct: 75 },
-                { name: 'Psicología', students: 42, pct: 60 },
-                { name: 'Derecho', students: 31, pct: 45 },
-              ].map((p) => (
-                <div key={p.name} className="space-y-1.5">
-                  <div className="flex justify-between items-center text-[10px] font-bold">
-                    <span className="text-slate-600 truncate mr-4">{p.name}</span>
-                    <span className="text-slate-900 shrink-0">{p.students}</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-red-400 rounded-full" style={{ width: `${p.pct}%` }} />
-                  </div>
-                </div>
-              ))}
-           </div>
-           <button className="mt-6 flex items-center gap-2 text-[#006875] text-[11px] font-bold hover:translate-x-1 transition-transform group">
-            Ver todos <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
+          {/* Separador */}
+          <div className="border-t border-slate-100 my-6" />
 
-        {/* Activities */}
-        <div className="lg:col-span-1 glass-card rounded-3xl p-8">
-          <h3 className="text-sm font-bold mb-6">Actividades programadas</h3>
-          <div className="space-y-5">
-            {[
-              { label: 'Llamadas de seguimiento', time: '10:00 AM', count: 12 },
-              { label: 'Recordatorios automáticos', time: '12:00 PM', count: 56 },
-              { label: 'Gestiones por WhatsApp', time: '02:00 PM', count: 28 },
-              { label: 'Revisión de acuerdos', time: '04:00 PM', count: 8 },
-            ].map((a) => (
-              <div key={a.label} className="flex items-center gap-4 group cursor-pointer">
-                <div className="w-1 h-10 bg-slate-200 rounded-full shrink-0 group-hover:bg-[#00e5ff] transition-colors" />
-                <div className="flex-1">
-                  <p className="text-[11px] font-bold text-slate-800">{a.label}</p>
-                  <p className="text-[9px] font-semibold text-slate-400">{a.time}</p>
+          {/* Stats inferiores */}
+          <div className="grid grid-cols-3 gap-4 mb-5">
+            {riskBottomStats.map((s) => (
+              <div key={s.label} className="flex items-start gap-3">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${s.iconBg}`}>
+                  <s.Icon size={14} className={s.iconColor} />
                 </div>
-                <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">
-                  {a.count}
+                <div>
+                  <p className="text-[9px] text-slate-400 font-semibold uppercase tracking-widest leading-tight">{s.label}</p>
+                  <p className={`text-sm font-bold ${s.valueColor}`}>{s.value}</p>
+                  <p className="text-[9px] text-slate-400">{s.sub}</p>
                 </div>
               </div>
             ))}
           </div>
-          <button className="mt-6 flex items-center gap-2 text-[#006875] text-[11px] font-bold hover:translate-x-1 transition-transform group">
-            Ver agenda completa <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+
+          {/* CTA */}
+          <button className="w-full flex items-center justify-center gap-2 border border-[#006875] text-[#006875] rounded-2xl py-3 text-sm font-bold hover:bg-[#006875] hover:text-white transition-all">
+            Ver estudiantes críticos <ChevronRight size={15} />
           </button>
         </div>
 
-        {/* AI Insight Card */}
+
+{/* AI Insight Card */}
         <div className="lg:col-span-1 flex flex-col gap-6">
            <div className="flex-1 bg-gradient-to-br from-indigo-900 to-navy-dark rounded-3xl p-8 relative overflow-hidden flex flex-col">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#00e5ff]/10 blur-3xl -mr-12 -mt-12" />
